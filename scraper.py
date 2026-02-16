@@ -18,7 +18,8 @@ if not os.path.exists(output_dir):
     os.makedirs(output_dir)
     print("📁 Папката 'data' е готова. Let's cook.")
 
-output_filename = os.path.join(output_dir, "lekaribg_full_data.xlsx")
+# 🛑 ТУК БЕШЕ ГРЕШКАТА, ГАЩНИК! СЕГА ИМЕТО СЪВПАДА С YAML-A:
+output_filename = os.path.join(output_dir, "lekaribg_data.xlsx")
 print(f"🎯 Данните отиват тук: {output_filename}")
 
 # --- ⚙️ НАСТРОЙКИ НА БРАУЗЪРА ---
@@ -64,10 +65,9 @@ def save_single_record(record):
 
 # --- 🕵️‍♂️ PROFILE SCRAPER ---
 def scrape_details_from_profile(url, basic_info):
-    print(f"   👉 Visiting: {url}")
+    # print(f"   👉 Visiting: {url}") # Спрях го, че много спами лога
     try:
         driver.get(url)
-        # Намалих малко времето, за да върви по-бързо в GitHub, но не прекалено
         time.sleep(0.5) 
         
         try:
@@ -111,8 +111,6 @@ def scrape_details_from_profile(url, basic_info):
 
 # --- 📜 MAIN LOOP (INFINITE GRIND) ---
 page = 1
-# ВНИМАНИЕ: Махнахме max_pages. Цикълът е безкраен, докато не спре да намира резултати.
-
 print("🚀 Start the INFINITE grind...")
 
 try:
@@ -122,19 +120,16 @@ try:
         driver.get(target_url)
         
         try:
-            # Чакаме за резултати или съобщение за грешка
             try:
                 WebDriverWait(driver, 5).until(
                     EC.presence_of_element_located((By.CSS_SELECTOR, ".wlt_search_results"))
                 )
             except:
-                # Ако няма контейнер с резултати след 5 секунди, значи сме стигнали края
                 print("⛔ Няма контейнер с резултати. Вероятно край на страниците.")
                 break
 
             items = driver.find_elements(By.CSS_SELECTOR, ".wlt_search_results .itemdata")
             
-            # ВТОРА ПРОВЕРКА: Ако контейнерът го има, но е празен
             if not items:
                 print("⛔ Намерих 0 резултата. Game Over. Финито.")
                 break
@@ -170,11 +165,9 @@ try:
             
         except Exception as e:
             print(f"🤬 CRITICAL ERROR на страница {page}: {e}")
-            # Ако гръмне страницата, пробваме следващата за всеки случай, или спираме
-            # За да сме сигурни, че няма да зацикли, увеличаваме брояча
             page += 1
-            if page > 500: # Hard limit, да не гръмне сървъра на GitHub ако нещо се обърка брутално
-                print("💀 Hard limit reached (500 pages). Stopping safety protocol.")
+            if page > 500:
+                print("💀 Hard limit reached. Stopping safety protocol.")
                 break
             continue
 
@@ -182,4 +175,4 @@ finally:
     try:
         driver.quit()
     except: pass
-    print(f"\n🏁 Всичко приключи. Данните са в артефактите.")
+    print(f"\n🏁 Всичко приключи. Данните са в артефактите (вече с правилното име, надявам се).")
