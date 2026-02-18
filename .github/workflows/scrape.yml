@@ -1,9 +1,9 @@
 name: LekariBG Grind 🔥
 
 on:
-  workflow_dispatch: # Позволява ти да го пуснеш ръчно с копче
+  workflow_dispatch:
   schedule:
-    - cron: '0 6 * * 1' # Или автоматично всеки понеделник сутрин (optional)
+    - cron: '0 6 * * 1'
 
 jobs:
   scrape-and-save:
@@ -27,8 +27,9 @@ jobs:
         run: python scraper.py
 
       - name: 📤 Upload Excel Artifact
+        if: always()  # 👈 ТОВА Е ВАЖНОТО, ГАЩНИК!
         uses: actions/upload-artifact@v4
         with:
           name: lekaribg-data
-          path: data/lekaribg_data.xlsx
+          path: data/lekaribg_data_v2.xlsx  # Трябва да съвпада точно с python скрипта
           retention-days: 5
